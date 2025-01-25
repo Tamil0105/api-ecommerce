@@ -57,12 +57,12 @@ export class OrdersService {
     orderData: Partial<Order>,
     productIds: number[],
   ): Promise<Order> {
+
     // Find the existing order
     const existingOrder = await this.orderRepository.findOne({
       where: { id },
       relations: ['orderedProducts'],
     });
-
     if (!existingOrder) {
       throw new Error('Order not found');
     }
@@ -70,15 +70,13 @@ export class OrdersService {
     // Update the order properties
     Object.assign(existingOrder, orderData);
     await this.orderRepository.save(existingOrder);
-
     // First, delete existing ordered products that are not in the new productIds
     const existingProductIds = existingOrder.orderedProducts.map(
-      (op) => op.product.id,
+      (op) => op.id,
     );
     const productsToRemove = existingOrder.orderedProducts.filter(
-      (op) => !productIds.includes(op.product.id),
+      (op) => !productIds.includes(op.id),
     );
-
     if (productsToRemove.length > 0) {
       await this.orderProductRepository.delete(
         productsToRemove.map((op) => op.id),
