@@ -17,9 +17,14 @@ export class OrdersController {
   }
 
   @Put(':id')
-  async update(@Param('id') id: number , @Body() order:Order): Promise<Order[]> {
-    return this.ordersService.update(id,order);
+  async update(
+    @Param('id') id: number,
+    @Body() orderData: Partial<Order>,
+    @Body('productIds') productIds: number[],
+  ): Promise<Order> {
+    return this.ordersService.update(id, orderData, productIds);
   }
+  
   @Delete(':id')
   async delete(@Param('id') id: number ) {
     return this.ordersService.remove(id);
